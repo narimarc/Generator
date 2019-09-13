@@ -28,30 +28,30 @@
            -f 
               A string that specifies the output file format. 
               >>
-	      >> Generic formats:
+        >> Generic formats:
               >>
                * `gst': 
                     The 'definite' GENIE summary tree format (gst).
-   	       * `gxml': 
+           * `gxml': 
                      GENIE XML event format 
-   	       * `ghep_mock_data': 
+           * `ghep_mock_data': 
                      Output file has the same format as the input file (GHEP) but
                      all information other than final state particles is hidden
-   	       * `rootracker': 
+           * `rootracker': 
                      A bare-ROOT STDHEP-like GENIE event tree.
-   	       * `rootracker_mock_data': 
+           * `rootracker_mock_data': 
                      As the `rootracker' format but hiddes all information
                      except the final state particles.
               >>
-	      >> Experiment-specific formats:
+        >> Experiment-specific formats:
               >>
-   	       * `t2k_rootracker':
+           * `t2k_rootracker':
                      A variance of the `rootracker' format used by the nd280, INGRID and 2km. 
                      Includes, in addition, JPARC flux pass-through info.
-   	       * `numi_rootracker':
+           * `numi_rootracker':
                      A variance of the `rootracker' format for the NuMI expts.
                      Includes, in addition, NuMI flux pass-through info.
-   	       * `t2k_tracker': 
+           * `t2k_tracker': 
                      A tracker-type format with tweaks required by the SuperK MC (SKDETSIM):
                         - Converting K0, \bar{K0} -> KO_{long}, K0_{short}
                         - Emulating 'NEUT' reaction codes
@@ -62,18 +62,18 @@
                           one used at the near detectors and can be used for 
                           global systematic studies.
               >>
-	      >> GENIE test / cross-generator comparison formats:
+        >> GENIE test / cross-generator comparison formats:
               >>
-   	       * `ghad': 
-	             NEUGEN-style text-based format for hadronization studies
-   	       * `ginuke': 
-	             A summary ntuple for intranuclear-rescattering studies using simulated
+           * `ghad': 
+               NEUGEN-style text-based format for hadronization studies
+           * `ginuke': 
+               A summary ntuple for intranuclear-rescattering studies using simulated
                      hadron-nucleus samples
               >>
-	      >> Other (depreciated) formats:
+        >> Other (depreciated) formats:
               >>
-   	       * `nuance_tracker': 
-   		     NUANCE-style tracker text-based format 
+           * `nuance_tracker': 
+           NUANCE-style tracker text-based format 
            -o  
               Specifies the output filename. 
               If not specified a the default filename is constructed by the 
@@ -98,7 +98,7 @@
            --event-record-print-level
               Allows users to set the level of information shown when the event
               record is printed in the screen. See GHepRecord::Print().
-		
+    
          Examples:
            (1)  shell% gntpc -i myfile.ghep.root -f t2k_rootracker
 
@@ -243,42 +243,42 @@ int main(int argc, char ** argv)
 
    case (kConvFmt_gst)  :
 
-	ConvertToGST();        
-	break;  
+  ConvertToGST();        
+  break;  
 
    case (kConvFmt_gxml) :  
 
-	ConvertToGXML();         
-	break;
+  ConvertToGXML();         
+  break;
 
    case (kConvFmt_ghep_mock_data) :  
 
-	ConvertToGHepMock();         
-	break;
+  ConvertToGHepMock();         
+  break;
 
    case (kConvFmt_rootracker          ) :  
    case (kConvFmt_rootracker_mock_data) :  
    case (kConvFmt_t2k_rootracker      ) :  
    case (kConvFmt_numi_rootracker     ) :  
 
-	ConvertToGRooTracker(); 
-	break;
+  ConvertToGRooTracker(); 
+  break;
 
    case (kConvFmt_t2k_tracker   )  :  
    case (kConvFmt_nuance_tracker)  :  
 
-	ConvertToGTracker();        
-	break;
+  ConvertToGTracker();        
+  break;
 
    case (kConvFmt_ghad) :  
 
-	ConvertToGHad();         
-	break;
+  ConvertToGHad();         
+  break;
 
    case (kConvFmt_ginuke) :  
 
-	ConvertToGINuke();         
-	break;
+  ConvertToGINuke();         
+  break;
 
    default:
      LOG("gntpc", pFATAL)
@@ -323,7 +323,6 @@ void ConvertToGST(void)
   bool   brIsCC        = false;  // Is Weak CC process?
   bool   brIsNC        = false;  // Is Weak NC process?
   bool   brIsCharmPro  = false;  // Produces charm?
-  bool   brIsAMNuGamma = false;  // is anomaly mediated nu gamma
   int    brCodeNeut    = 0;      // The equivalent NEUT reaction code (if any)
   int    brCodeNuance  = 0;      // The equivalent NUANCE reaction code (if any)
   double brWeight      = 0;      // Event weight
@@ -393,7 +392,7 @@ void ConvertToGST(void)
   double brVtxT;                 // Vertex t in detector coord system (SI)
   double brSumKEf;               // Sum of kinetic energies of all final state particles
   double brCalResp0;             // Approximate calorimetric response to the hadronic system computed as sum of
-				 //  - (kinetic energy) for pi+, pi-, p, n 
+         //  - (kinetic energy) for pi+, pi-, p, n 
                                  //  - (energy + 2*mass) for antiproton, antineutron
                                  //  - ((e/h) * energy)   for pi0, gamma, e-, e+, where e/h is set to 1.3
                                  //  - (kinetic energy) for other particles
@@ -409,99 +408,98 @@ void ConvertToGST(void)
   // Create tree branches
   //
   s_tree->Branch("iev",           &brIev,           "iev/I"         );
-  s_tree->Branch("neu",	          &brNeutrino,      "neu/I"	    );
-  s_tree->Branch("fspl",	      &brFSPrimLept,    "fspl/I"	    );
-  s_tree->Branch("tgt",           &brTarget,        "tgt/I"	    );
-  s_tree->Branch("Z",             &brTargetZ,       "Z/I"	    );
-  s_tree->Branch("A",             &brTargetA,       "A/I"	    );
+  s_tree->Branch("neu",           &brNeutrino,      "neu/I"     );
+  s_tree->Branch("fspl",        &brFSPrimLept,    "fspl/I"      );
+  s_tree->Branch("tgt",           &brTarget,        "tgt/I"     );
+  s_tree->Branch("Z",             &brTargetZ,       "Z/I"     );
+  s_tree->Branch("A",             &brTargetA,       "A/I"     );
   s_tree->Branch("hitnuc",        &brHitNuc,        "hitnuc/I"      );
   s_tree->Branch("hitqrk",        &brHitQrk,        "hitqrk/I"      );
-  s_tree->Branch("resid",         &brResId,	    "resid/I"	    );
-  s_tree->Branch("sea",	          &brFromSea,       "sea/O"	    );
-  s_tree->Branch("qel",	          &brIsQel,	    "qel/O"	    );
-  s_tree->Branch("mec",	          &brIsMec,	    "mec/O"	    );
-  s_tree->Branch("res",	          &brIsRes,	    "res/O"	    );
-  s_tree->Branch("dis",	          &brIsDis,	    "dis/O"	    );
-  s_tree->Branch("coh",           &brIsCoh,         "coh/O"	    );
-  s_tree->Branch("dfr",           &brIsDfr,         "dfr/O"	    );
-  s_tree->Branch("imd",	          &brIsImd,	    "imd/O"	    );
-  s_tree->Branch("imdanh",        &brIsImdAnh,	    "imdanh/O"	    );
+  s_tree->Branch("resid",         &brResId,     "resid/I"     );
+  s_tree->Branch("sea",           &brFromSea,       "sea/O"     );
+  s_tree->Branch("qel",           &brIsQel,     "qel/O"     );
+  s_tree->Branch("mec",           &brIsMec,     "mec/O"     );
+  s_tree->Branch("res",           &brIsRes,     "res/O"     );
+  s_tree->Branch("dis",           &brIsDis,     "dis/O"     );
+  s_tree->Branch("coh",           &brIsCoh,         "coh/O"     );
+  s_tree->Branch("dfr",           &brIsDfr,         "dfr/O"     );
+  s_tree->Branch("imd",           &brIsImd,     "imd/O"     );
+  s_tree->Branch("imdanh",        &brIsImdAnh,      "imdanh/O"      );
   s_tree->Branch("singlek",       &brIsSingleK,     "singlek/O"     );  
-  s_tree->Branch("nuel",          &brIsNuEL,        "nuel/O"	    );
-  s_tree->Branch("em",	          &brIsEM,	    "em/O"	    );
-  s_tree->Branch("cc",	          &brIsCC,	    "cc/O"	    );
-  s_tree->Branch("nc",	          &brIsNC,	    "nc/O"	    );
-  s_tree->Branch("charm",         &brIsCharmPro,    "charm/O"	    );
-  s_tree->Branch("amnugamma",     &brIsAMNuGamma,    "amnugamma/O"	    );
+  s_tree->Branch("nuel",          &brIsNuEL,        "nuel/O"      );
+  s_tree->Branch("em",            &brIsEM,      "em/O"      );
+  s_tree->Branch("cc",            &brIsCC,      "cc/O"      );
+  s_tree->Branch("nc",            &brIsNC,      "nc/O"      );
+  s_tree->Branch("charm",         &brIsCharmPro,    "charm/O"     );
   s_tree->Branch("neut_code",     &brCodeNeut,      "neut_code/I"   );
   s_tree->Branch("nuance_code",   &brCodeNuance,    "nuance_code/I" );
-  s_tree->Branch("wght",          &brWeight,        "wght/D"	    );
-  s_tree->Branch("xs",	          &brKineXs,        "xs/D"	    );
-  s_tree->Branch("ys",	          &brKineYs,        "ys/D"	    );
-  s_tree->Branch("ts",	          &brKineTs,        "ts/D"	    );
-  s_tree->Branch("Q2s",	          &brKineQ2s,       "Q2s/D"	    );
-  s_tree->Branch("Ws",	          &brKineWs,        "Ws/D"	    );
-  s_tree->Branch("x",	          &brKineX,	    "x/D"	    );
-  s_tree->Branch("y",	          &brKineY,	    "y/D"	    );
-  s_tree->Branch("t",	          &brKineT,	    "t/D"	    );
-  s_tree->Branch("Q2",	          &brKineQ2,        "Q2/D"	    );
-  s_tree->Branch("W",	          &brKineW,	    "W/D"	    );
-  s_tree->Branch("EvRF",	      &brEvRF,	    "EvRF/D"	    );
-  s_tree->Branch("Ev",	          &brEv,	    "Ev/D"	    );
-  s_tree->Branch("pxv",	          &brPxv,	    "pxv/D"	    );
-  s_tree->Branch("pyv",	          &brPyv,	    "pyv/D"	    );
-  s_tree->Branch("pzv",	          &brPzv,	    "pzv/D"	    );
-  s_tree->Branch("En",	          &brEn,	    "En/D"	    );
-  s_tree->Branch("pxn",	          &brPxn,	    "pxn/D"	    );
-  s_tree->Branch("pyn",	          &brPyn,	    "pyn/D"	    );
-  s_tree->Branch("pzn",	          &brPzn,	    "pzn/D"	    );
-  s_tree->Branch("El",	          &brEl,	    "El/D"	    );
-  s_tree->Branch("pxl",	          &brPxl,	    "pxl/D"	    );
-  s_tree->Branch("pyl",	          &brPyl,	    "pyl/D"	    );
-  s_tree->Branch("pzl",	          &brPzl,	    "pzl/D"	    );
+  s_tree->Branch("wght",          &brWeight,        "wght/D"      );
+  s_tree->Branch("xs",            &brKineXs,        "xs/D"      );
+  s_tree->Branch("ys",            &brKineYs,        "ys/D"      );
+  s_tree->Branch("ts",            &brKineTs,        "ts/D"      );
+  s_tree->Branch("Q2s",           &brKineQ2s,       "Q2s/D"     );
+  s_tree->Branch("Ws",            &brKineWs,        "Ws/D"      );
+  s_tree->Branch("x",           &brKineX,     "x/D"     );
+  s_tree->Branch("y",           &brKineY,     "y/D"     );
+  s_tree->Branch("t",           &brKineT,     "t/D"     );
+  s_tree->Branch("Q2",            &brKineQ2,        "Q2/D"      );
+  s_tree->Branch("W",           &brKineW,     "W/D"     );
+  s_tree->Branch("EvRF",        &brEvRF,      "EvRF/D"      );
+  s_tree->Branch("Ev",            &brEv,      "Ev/D"      );
+  s_tree->Branch("pxv",           &brPxv,     "pxv/D"     );
+  s_tree->Branch("pyv",           &brPyv,     "pyv/D"     );
+  s_tree->Branch("pzv",           &brPzv,     "pzv/D"     );
+  s_tree->Branch("En",            &brEn,      "En/D"      );
+  s_tree->Branch("pxn",           &brPxn,     "pxn/D"     );
+  s_tree->Branch("pyn",           &brPyn,     "pyn/D"     );
+  s_tree->Branch("pzn",           &brPzn,     "pzn/D"     );
+  s_tree->Branch("El",            &brEl,      "El/D"      );
+  s_tree->Branch("pxl",           &brPxl,     "pxl/D"     );
+  s_tree->Branch("pyl",           &brPyl,     "pyl/D"     );
+  s_tree->Branch("pzl",           &brPzl,     "pzl/D"     );
   s_tree->Branch("pl",            &brPl,            "pl/D"          );
   s_tree->Branch("cthl",          &brCosthl,        "cthl/D"        );
-  s_tree->Branch("nfp",	          &brNfP,	    "nfp/I"	    );
-  s_tree->Branch("nfn",	          &brNfN,	    "nfn/I"	    );
-  s_tree->Branch("nfpip",         &brNfPip,	    "nfpip/I"	    );
-  s_tree->Branch("nfpim",         &brNfPim,	    "nfpim/I"	    );
-  s_tree->Branch("nfpi0",         &brNfPi0,	    "nfpi0/I"	    );
-  s_tree->Branch("nfkp",          &brNfKp,	    "nfkp/I"	    );
-  s_tree->Branch("nfkm",          &brNfKm,	    "nfkm/I"	    );
-  s_tree->Branch("nfk0",          &brNfK0,	    "nfk0/I"	    );
-  s_tree->Branch("nfem",          &brNfEM,	    "nfem/I"	    );
+  s_tree->Branch("nfp",           &brNfP,     "nfp/I"     );
+  s_tree->Branch("nfn",           &brNfN,     "nfn/I"     );
+  s_tree->Branch("nfpip",         &brNfPip,     "nfpip/I"     );
+  s_tree->Branch("nfpim",         &brNfPim,     "nfpim/I"     );
+  s_tree->Branch("nfpi0",         &brNfPi0,     "nfpi0/I"     );
+  s_tree->Branch("nfkp",          &brNfKp,      "nfkp/I"      );
+  s_tree->Branch("nfkm",          &brNfKm,      "nfkm/I"      );
+  s_tree->Branch("nfk0",          &brNfK0,      "nfk0/I"      );
+  s_tree->Branch("nfem",          &brNfEM,      "nfem/I"      );
   s_tree->Branch("nfother",       &brNfOther,       "nfother/I"     );
-  s_tree->Branch("nip",	          &brNiP,	    "nip/I"	    );
-  s_tree->Branch("nin",	          &brNiN,	    "nin/I"	    );
-  s_tree->Branch("nipip",         &brNiPip,	    "nipip/I"	    );
-  s_tree->Branch("nipim",         &brNiPim,	    "nipim/I"	    );
-  s_tree->Branch("nipi0",         &brNiPi0,	    "nipi0/I"	    );
-  s_tree->Branch("nikp",          &brNiKp,	    "nikp/I"	    );
-  s_tree->Branch("nikm",          &brNiKm,	    "nikm/I"	    );
-  s_tree->Branch("nik0",          &brNiK0,	    "nik0/I"	    );
-  s_tree->Branch("niem",          &brNiEM,	    "niem/I"	    );
+  s_tree->Branch("nip",           &brNiP,     "nip/I"     );
+  s_tree->Branch("nin",           &brNiN,     "nin/I"     );
+  s_tree->Branch("nipip",         &brNiPip,     "nipip/I"     );
+  s_tree->Branch("nipim",         &brNiPim,     "nipim/I"     );
+  s_tree->Branch("nipi0",         &brNiPi0,     "nipi0/I"     );
+  s_tree->Branch("nikp",          &brNiKp,      "nikp/I"      );
+  s_tree->Branch("nikm",          &brNiKm,      "nikm/I"      );
+  s_tree->Branch("nik0",          &brNiK0,      "nik0/I"      );
+  s_tree->Branch("niem",          &brNiEM,      "niem/I"      );
   s_tree->Branch("niother",       &brNiOther,       "niother/I"     );
-  s_tree->Branch("ni",	         &brNi,	            "ni/I"	    );
-  s_tree->Branch("pdgi",          brPdgi,	    "pdgi[ni]/I "   );
-  s_tree->Branch("resc",          brResc,	    "resc[ni]/I "   );
-  s_tree->Branch("Ei",	          brEi,	            "Ei[ni]/D"      );
-  s_tree->Branch("pxi",	          brPxi,	    "pxi[ni]/D"     );
-  s_tree->Branch("pyi",	          brPyi,	    "pyi[ni]/D"     );
-  s_tree->Branch("pzi",	          brPzi,	    "pzi[ni]/D"     );
-  s_tree->Branch("nf",	         &brNf,	            "nf/I"	    );
-  s_tree->Branch("pdgf",          brPdgf,	    "pdgf[nf]/I "   );
-  s_tree->Branch("Ef",	          brEf,	            "Ef[nf]/D"      );
-  s_tree->Branch("pxf",	          brPxf,	    "pxf[nf]/D"     );
-  s_tree->Branch("pyf",	          brPyf,	    "pyf[nf]/D"     );
-  s_tree->Branch("pzf",	          brPzf,	    "pzf[nf]/D"     );
+  s_tree->Branch("ni",           &brNi,             "ni/I"      );
+  s_tree->Branch("pdgi",          brPdgi,     "pdgi[ni]/I "   );
+  s_tree->Branch("resc",          brResc,     "resc[ni]/I "   );
+  s_tree->Branch("Ei",            brEi,             "Ei[ni]/D"      );
+  s_tree->Branch("pxi",           brPxi,      "pxi[ni]/D"     );
+  s_tree->Branch("pyi",           brPyi,      "pyi[ni]/D"     );
+  s_tree->Branch("pzi",           brPzi,      "pzi[ni]/D"     );
+  s_tree->Branch("nf",           &brNf,             "nf/I"      );
+  s_tree->Branch("pdgf",          brPdgf,     "pdgf[nf]/I "   );
+  s_tree->Branch("Ef",            brEf,             "Ef[nf]/D"      );
+  s_tree->Branch("pxf",           brPxf,      "pxf[nf]/D"     );
+  s_tree->Branch("pyf",           brPyf,      "pyf[nf]/D"     );
+  s_tree->Branch("pzf",           brPzf,      "pzf[nf]/D"     );
   s_tree->Branch("pf",            brPf,             "pf[nf]/D"      );
   s_tree->Branch("cthf",          brCosthf,         "cthf[nf]/D"    );
-  s_tree->Branch("vtxx",         &brVtxX,	    "vtxx/D"        );
-  s_tree->Branch("vtxy",         &brVtxY,	    "vtxy/D"        );
-  s_tree->Branch("vtxz",         &brVtxZ,	    "vtxz/D"        );
-  s_tree->Branch("vtxt",         &brVtxT,	    "vtxt/D"        );
-  s_tree->Branch("sumKEf",       &brSumKEf,	    "sumKEf/D"      );
-  s_tree->Branch("calresp0",     &brCalResp0,	    "calresp0/D"    );
+  s_tree->Branch("vtxx",         &brVtxX,     "vtxx/D"        );
+  s_tree->Branch("vtxy",         &brVtxY,     "vtxy/D"        );
+  s_tree->Branch("vtxz",         &brVtxZ,     "vtxz/D"        );
+  s_tree->Branch("vtxt",         &brVtxT,     "vtxt/D"        );
+  s_tree->Branch("sumKEf",       &brSumKEf,     "sumKEf/D"      );
+  s_tree->Branch("calresp0",     &brCalResp0,     "calresp0/D"    );
 
   // Open the ROOT file and get the TTree & its header
   TFile fin(gOptInpFileName.c_str(),"READ");
@@ -610,15 +608,14 @@ void ConvertToGST(void)
     bool is_imd    = proc_info.IsInverseMuDecay();
     bool is_imdanh = proc_info.IsIMDAnnihilation();
     bool is_singlek = proc_info.IsSingleKaon();    
-    bool is_nuel      = proc_info.IsNuElectronElastic();
-    bool is_em        = proc_info.IsEM();
-    bool is_weakcc    = proc_info.IsWeakCC();
-    bool is_weaknc    = proc_info.IsWeakNC();
-    bool is_mec       = proc_info.IsMEC();
-    bool is_amnugamma = proc_info.IsAMNuGamma();
+    bool is_nuel   = proc_info.IsNuElectronElastic();
+    bool is_em     = proc_info.IsEM();
+    bool is_weakcc = proc_info.IsWeakCC();
+    bool is_weaknc = proc_info.IsWeakNC();
+    bool is_mec    = proc_info.IsMEC();
 
     if (!hitnucl && neutrino) {
-        assert(is_coh || is_imd || is_imdanh || is_nuel | is_amnugamma);
+        assert(is_coh || is_imd || is_imdanh || is_nuel);
     }
   
     // Hit quark - set only for DIS events
@@ -737,8 +734,8 @@ void ConvertToGST(void)
          if (pdgc == kPdgGamma || pdgc == kPdgElectron || pdgc == kPdgPositron)  {
             int igmom = p->FirstMother();
             if(igmom!=-1) {
-	      // only count e+'s e-'s or gammas not from decay of pi0
-	      if(event.Particle(igmom)->Pdg() != kPdgPi0) { final_had_syst.push_back(ip); }
+        // only count e+'s e-'s or gammas not from decay of pi0
+        if(event.Particle(igmom)->Pdg() != kPdgPi0) { final_had_syst.push_back(ip); }
             }
          } else {
             final_had_syst.push_back(ip);
@@ -746,18 +743,21 @@ void ConvertToGST(void)
       }
       // now add pi0's that were decayed as short lived particles
       else if(pdgc == kPdgPi0){
-	int ifd = p->FirstDaughter();
-	int fd_pdgc = event.Particle(ifd)->Pdg();
-	// just require that first daughter is one of gamma, e+ or e-  
-	if(fd_pdgc == kPdgGamma || fd_pdgc == kPdgElectron || fd_pdgc == kPdgPositron){
-	  final_had_syst.push_back(ip);
-	}
+
+  int ifd = p->FirstDaughter();
+  if(ifd!=-1){
+  int fd_pdgc = event.Particle(ifd)->Pdg();
+  // just require that first daughter is one of gamma, e+ or e-  
+  if(fd_pdgc == kPdgGamma || fd_pdgc == kPdgElectron || fd_pdgc == kPdgPositron){
+    final_had_syst.push_back(ip);
+  }
+}
       }
     }//particle-loop
 
     if( count(final_had_syst.begin(), final_had_syst.end(), -1) > 0) {
         mcrec->Clear();
- 	continue;
+  continue;
     }
 
     //
@@ -787,83 +787,83 @@ void ConvertToGST(void)
       // work for hN.  We must now look specifically for these particles.
       int ist_store = -10;
       if(is_res){
-	while( (p = (GHepParticle *) piter_prim.Next()) ){
-	  ip++;      
-	  int ist_comp  = p->Status();
-	  if(ist_comp==kIStDecayedState) {
-	    ist_store = ip;    //store this mother
-	    continue;
-	  }
-	  //	  LOG("gntpc",pNOTICE) << p->FirstMother()<< "  "<<ist_store;
-	  if(p->FirstMother()==ist_store) {
-	      prim_had_syst.push_back(ip);
-	    }
-	}
+  while( (p = (GHepParticle *) piter_prim.Next()) ){
+    ip++;      
+    int ist_comp  = p->Status();
+    if(ist_comp==kIStDecayedState) {
+      ist_store = ip;    //store this mother
+      continue;
+    }
+    //    LOG("gntpc",pNOTICE) << p->FirstMother()<< "  "<<ist_store;
+    if(p->FirstMother()==ist_store) {
+        prim_had_syst.push_back(ip);
+      }
+  }
       }
       if(is_dis){
-	while( (p = (GHepParticle *) piter_prim.Next()) ){
-	  ip++;      
-	  int ist_comp  = p->Status();
-	  if(ist_comp==kIStDISPreFragmHadronicState) {
-	    ist_store = ip;    //store this mother
-	    continue;
-	  }
-	  if(p->FirstMother()==ist_store) {
-	      prim_had_syst.push_back(ip);
-	    }
-	}
+  while( (p = (GHepParticle *) piter_prim.Next()) ){
+    ip++;      
+    int ist_comp  = p->Status();
+    if(ist_comp==kIStDISPreFragmHadronicState) {
+      ist_store = ip;    //store this mother
+      continue;
+    }
+    if(p->FirstMother()==ist_store) {
+        prim_had_syst.push_back(ip);
+      }
+  }
       }
       if(is_qel){
-	while( (p = (GHepParticle *) piter_prim.Next()) ){
-	  ip++;      
-	  int ist_comp  = p->Status();
-	  if(ist_comp==kIStNucleonTarget) {
-	    ist_store = ip;    //store this mother
-	    continue;
-	  }
-	  //	  LOG("gntpc",pNOTICE) << p->FirstMother()<< "  "<<ist_store;
-	  if(p->FirstMother()==ist_store) {
-	      prim_had_syst.push_back(ip);
-	    }
-	}
+  while( (p = (GHepParticle *) piter_prim.Next()) ){
+    ip++;      
+    int ist_comp  = p->Status();
+    if(ist_comp==kIStNucleonTarget) {
+      ist_store = ip;    //store this mother
+      continue;
+    }
+    //    LOG("gntpc",pNOTICE) << p->FirstMother()<< "  "<<ist_store;
+    if(p->FirstMother()==ist_store) {
+        prim_had_syst.push_back(ip);
+      }
+  }
       }      
       if(is_mec){
-	while( (p = (GHepParticle *) piter_prim.Next()) ){
-	  ip++;      
-	  int ist_comp  = p->Status();
-	  if(ist_comp==kIStDecayedState) {
-	    ist_store = ip;    //store this mother
-	    continue;
-	  }
-	  //	  LOG("gntpc",pNOTICE) << "MEC: " << p->FirstMother()<< "  "<<ist_store;
-	  if(p->FirstMother()==ist_store) {
-	      prim_had_syst.push_back(ip);
-	    }
-	}
+  while( (p = (GHepParticle *) piter_prim.Next()) ){
+    ip++;      
+    int ist_comp  = p->Status();
+    if(ist_comp==kIStDecayedState) {
+      ist_store = ip;    //store this mother
+      continue;
+    }
+    //    LOG("gntpc",pNOTICE) << "MEC: " << p->FirstMother()<< "  "<<ist_store;
+    if(p->FirstMother()==ist_store) {
+        prim_had_syst.push_back(ip);
+      }
+  }
       }
       // otherwise loop over all particles and store indices of those which are hadrons
       // created within the nucleus
       /*      else {
-	while( (p = (GHepParticle *) piter_prim.Next()) ){
-	  ip++;      
-	  int ist_comp  = p->Status();
-	  if(ist_comp==kIStHadronInTheNucleus) {
-	    prim_had_syst.push_back(ip); 
-	  }
-	  }//particle-loop   */
-	//
-	// also include gammas from nuclear de-excitations (appearing in the daughter list of the 
-	// hit nucleus, earlier than the primary hadronic system extracted above)
-	for(int i = target->FirstDaughter(); i <= target->LastDaughter(); i++) {
-	  if(i<0) continue;
-	  if(event.Particle(i)->Status()==kIStStableFinalState) { prim_had_syst.push_back(i); }
-	}      
-	//      }//freenuc?
+  while( (p = (GHepParticle *) piter_prim.Next()) ){
+    ip++;      
+    int ist_comp  = p->Status();
+    if(ist_comp==kIStHadronInTheNucleus) {
+      prim_had_syst.push_back(ip); 
+    }
+    }//particle-loop   */
+  //
+  // also include gammas from nuclear de-excitations (appearing in the daughter list of the 
+  // hit nucleus, earlier than the primary hadronic system extracted above)
+  for(int i = target->FirstDaughter(); i <= target->LastDaughter(); i++) {
+    if(i<0) continue;
+    if(event.Particle(i)->Status()==kIStStableFinalState) { prim_had_syst.push_back(i); }
+  }      
+  //      }//freenuc?
     }//study_hadsystem?
     
     if( count(prim_had_syst.begin(), prim_had_syst.end(), -1) > 0) {
         mcrec->Clear();
- 	continue;
+  continue;
     }
 
     //
@@ -892,7 +892,6 @@ void ConvertToGST(void)
     brIsCC       = is_weakcc;  
     brIsNC       = is_weaknc;  
     brIsCharmPro = charm;
-    brIsAMNuGamma= is_amnugamma;
     brWeight     = weight;      
     brKineXs     = xs;      
     brKineYs     = ys;      
@@ -1355,16 +1354,16 @@ void ConvertToGTracker(void)
 
     // add 'NEUT'-like event type
     if(gOptOutFileFormat == kConvFmt_t2k_tracker) {
-    	int evtype = utils::ghep::NeutReactionCode(&event);
+      int evtype = utils::ghep::NeutReactionCode(&event);
         LOG("gntpc", pNOTICE) << "NEUT-like event type = " << evtype;
-    	output << "$ genie " << evtype << endl;
+      output << "$ genie " << evtype << endl;
     } //neut code
 
     // add 'NUANCE'-like event type
     else if(gOptOutFileFormat == kConvFmt_nuance_tracker) {
-    	int evtype = utils::ghep::NuanceReactionCode(&event);
+      int evtype = utils::ghep::NuanceReactionCode(&event);
         LOG("gntpc", pNOTICE) << "NUANCE-like event type = " << evtype;
-    	output << "$ nuance " << evtype << endl;
+      output << "$ nuance " << evtype << endl;
     } // nuance code
 
     else {
@@ -3147,34 +3146,34 @@ int HAProbeFSI(int probe_fsi, int probe_pdg, int numh, double E_had[], int pdg_h
   else if ( pdg::IsPion(probe_pdg) && numpip+numpi0+numpim==0) // Absorption
     { index=5; }
   else if ( (pdg::IsNucleon(probe_pdg) && numpip+numpi0+numpim==0 && numh>2 )
-	    || (probe_pdg==kPdgGamma && energy!=E_had[0] && numpip+numpi0+numpim==0)) // Knock-out
+      || (probe_pdg==kPdgGamma && energy!=E_had[0] && numpip+numpi0+numpim==0)) // Knock-out
     { index=6; }
   else if ( numpip+numpi0+numpim > (pdg::IsPion(probe_pdg) ? 1 : 0) ) // Pion production
     { index=7; }
   else if ( numh>=2 ) // Inelastic or Charge Exchange
     {
       for(int i = 0; i < numh; i++)
-	{
-	  if ( (pdg::IsPion(probe_pdg) && ( probe_pdg==pdg_had[i] ))
-	       || pdg::IsNucleon(probe_pdg) ) 
-	    {index=4;}	
-	  if(index!=4) 
-	    {index=2;}
-	}
+  {
+    if ( (pdg::IsPion(probe_pdg) && ( probe_pdg==pdg_had[i] ))
+         || pdg::IsNucleon(probe_pdg) ) 
+      {index=4;}  
+    if(index!=4) 
+      {index=2;}
+  }
     }
       else //Double Charge Exchange or Undefined
-	{
-	  bool undef = true;
-	  if ( pdg::IsPion(probe_pdg) )
-	    {
-	      for (int iter = 0; iter < numh; iter++)
-		{
-		  if      (probe_pdg==211 && pdg_had[iter]==-211) { index=8; undef=false; }
-		  else if (probe_pdg==-211 && pdg_had[iter]==211) { index=8; undef=false; }
-		}
-	    }
-	  if (undef) { index=0; }
-	}
+  {
+    bool undef = true;
+    if ( pdg::IsPion(probe_pdg) )
+      {
+        for (int iter = 0; iter < numh; iter++)
+    {
+      if      (probe_pdg==211 && pdg_had[iter]==-211) { index=8; undef=false; }
+      else if (probe_pdg==-211 && pdg_had[iter]==211) { index=8; undef=false; }
+    }
+      }
+    if (undef) { index=0; }
+  }
 
   return index;
 }

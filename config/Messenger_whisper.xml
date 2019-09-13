@@ -43,6 +43,8 @@
   <priority msgstream="Bardin">                FATAL </priority>
   <priority msgstream="BodekYang">             FATAL </priority>
   <priority msgstream="BodekRitchie">          FATAL </priority>
+  <priority msgstream="SmithMoniz">            FATAL </priority>
+  <priority msgstream="SMQELXSec">             FATAL </priority>
   <priority msgstream="Cache">                 FATAL </priority>
   <priority msgstream="CharmHad">              FATAL </priority>
   <priority msgstream="CFracTab">              FATAL </priority>
@@ -116,6 +118,7 @@
   <priority msgstream="INukeUtils">            FATAL </priority>
   <priority msgstream="INukeUtils2018">        FATAL </priority>
   <priority msgstream="INukeUtils2019">        FATAL </priority>
+  <priority msgstream="HINCLCascadeIntranuke"> FATAL </priority>
   <priority msgstream="ISApp">                 FATAL </priority>
   <priority msgstream="IntGenMap">             FATAL </priority>
   <priority msgstream="KNOHad">                FATAL </priority>

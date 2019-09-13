@@ -1,39 +1,22 @@
+#include "Framework/Conventions/GBuild.h"
+#ifdef __GENIE_INCL_ENABLED__
+
 #ifndef INCLConvertParticle_hh
 #define INCLConvertParticle_hh 1
 
-#include <list>
-#include <sstream>
-
-#include "G4INCLCascade.hh"
-#include "G4INCLVersion.hh"
-#include "G4INCLConfig.hh"
+// INCL++
+#include "G4INCLParticleSpecies.hh" // includes G4INCLParticleType
+#include "G4INCLParticleTable.hh"
 
 // GENIE
-#include "INCLConfigParser.h"
-
-#include "G4INCLConfigEnums.hh"
-
-#include "Framework/Conventions/Constants.h"
-#include "Framework/Conventions/Controls.h"
-#include "Framework/GHEP/GHepStatus.h"
-#include "Framework/GHEP/GHepRecord.h"
 #include "Framework/GHEP/GHepParticle.h"
-#include "Framework/ParticleData/PDGLibrary.h"
-#include "Framework/ParticleData/PDGCodes.h"
-#include "Framework/ParticleData/PDGCodeList.h"
 #include "Framework/ParticleData/PDGUtils.h"
+#include "Framework/ParticleData/PDGCodes.h"
+#include "Framework/ParticleData/PDGLibrary.h"
 
-#include <TFile.h>
-#include <TLorentzVector.h>
-#include <TTree.h>
-
-#include "G4INCLAbla07Interface.hh"
 using namespace genie;
 
 namespace G4INCL {
-
-  G4INCL::INCL *theINCLModel;
-  G4INCL::IDeExcitation *theDeExcitation ;
 
   // rwh ?? check this
   int INCLpartycleSpecietoPDGCODE(G4INCL::ParticleSpecies theSpecies) {
@@ -82,7 +65,7 @@ namespace G4INCL {
                          (result.py[nP])*(result.py[nP]) +
                          (result.pz[nP])*(result.pz[nP]) -
                          EKinP*EKinP) / (EKinP);
-    if (m_pnP < 10 && result.A[nP] == 0 && result.Z[nP] == 0) {
+    if (m_pnP < 10 && result.A[nP] == 0 && result.Z[nP] == 0) { // photon
       pdg_codeP = 22;
       E_pnP = TMath::Sqrt((result.px[nP])*(result.px[nP]) +
                           (result.py[nP])*(result.py[nP]) +
@@ -98,3 +81,5 @@ namespace G4INCL {
 
 }
 #endif
+
+#endif // __GENIE_INCL_ENABLED__

@@ -1,6 +1,6 @@
 //____________________________________________________________________________
 /*
- Copyright (c) 2003-2018, The GENIE Collaboration
+ Copyright (c) 2003-2019, The GENIE Collaboration
  For the full text of the license visit http://copyright.genie-mc.org
  or see $GENIE/LICENSE
 
@@ -304,6 +304,7 @@ double genie::utils::gsl::d2XSec_dWdQ2_E::DoEval(const double * xin) const
     double x=0,y=0;
     double E = fInteraction->InitState().ProbeE(kRfHitNucRest);
     double M = fInteraction->InitState().Tgt().HitNucP4Ptr()->M();
+
     kinematics::WQ2toXY(E,M,W,Q2,x,y);
     fInteraction->KinePtr()->Setx(x);
     fInteraction->KinePtr()->Sety(y);

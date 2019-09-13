@@ -9,8 +9,8 @@
    <config alg="genie::HAIntranuke">                 HAIntranuke.xml                 </config>
    <config alg="genie::HAIntranuke2018">             HAIntranuke2018.xml             </config>
    <config alg="genie::HNIntranuke2018">             HNIntranuke2018.xml             </config>
+   <config alg="genie::HINCLCascadeIntranuke">       HINCLCascadeIntranuke.xml       </config>
    <config alg="genie::UnstableParticleDecayer">     UnstableParticleDecayer.xml     </config>
-   <config alg="genie::HINCLCascade">                HINCLCascade.xml                </config>
    <config alg="genie::PauliBlocker">                PauliBlocker.xml                </config>
    <config alg="genie::NucDeExcitationSim">          NucDeExcitationSim.xml          </config>
    <config alg="genie::NucBindEnergyAggregator">     NucBindEnergyAggregator.xml     </config>
@@ -18,7 +18,6 @@
    <config alg="genie::VertexGenerator">             VertexGenerator.xml             </config>
    <config alg="genie::QELEventGenerator">           QELEventGenerator.xml           </config>
    <config alg="genie::QELEventGeneratorSM">         QELEventGeneratorSM.xml         </config>
-   <config alg="genie::DMELEventGenerator">          DMELEventGenerator.xml          </config>
    <config alg="genie::QELPrimaryLeptonGenerator">   QELPrimaryLeptonGenerator.xml   </config>
    <config alg="genie::DISPrimaryLeptonGenerator">   DISPrimaryLeptonGenerator.xml   </config>
    <config alg="genie::RESPrimaryLeptonGenerator">   RESPrimaryLeptonGenerator.xml   </config>
@@ -119,6 +118,7 @@
 
    <!--  ****** CONFIGURATION GENERIC CROSS SECTION INTEGRATORS ****** -->
    <config alg="genie::QELXSec">                     QELXSec.xml                     </config>
+   <config alg="genie::NewQELXSec">                  NewQELXSec.xml                  </config>
    <config alg="genie::SmithMonizQELCCXSec">         SmithMonizQELCCXSec.xml         </config>
    <config alg="genie::DISXSec">                     DISXSec.xml                     </config>
    <config alg="genie::COHXSec">                     COHXSec.xml                     </config>

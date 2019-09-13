@@ -13,7 +13,7 @@
 
 \created    November 26, 2004
 
-\cpright    Copyright (c) 2003-2018, The GENIE Collaboration
+\cpright    Copyright (c) 2003-2019, The GENIE Collaboration
             For the full text of the license visit http://copyright.genie-mc.org
             or see $GENIE/LICENSE
 */
@@ -97,6 +97,20 @@ namespace kinematics
   double RESImportanceSamplingEnvelope(double * x, double * par);
   double DISImportanceSamplingEnvelope(double * x, double * par);
   double COHImportanceSamplingEnvelope(double * x, double * par);
+
+  namespace electromagnetic
+  {
+   Range1D_t  InelWLim    (double El, double ml, double M);
+   Range1D_t  InelQ2Lim_W (double El, double ml, double M, double W);
+   Range1D_t  Inelq2Lim_W (double El, double ml, double M, double W);
+   Range1D_t  InelQ2Lim   (double El, double ml, double M);
+   Range1D_t  Inelq2Lim   (double El, double ml, double M);
+   Range1D_t  InelXLim    (double El, double ml, double M);
+   Range1D_t  InelYLim    (double El, double ml, double M);
+   Range1D_t  InelYLim_X  (double El, double ml, double M, double x);
+
+   static const double kMinQ2Limit   = 0.02;  // GeV^2 // Q2 threshold relevant for em scattering events
+  }
 
 } // kinematics namespace
 } // utils namespace
