@@ -55,7 +55,7 @@ STFC, Rutherford Appleton Laboratory
    - genie::HINCLCascadeIntranuke/OsetOff
   -->
   <param type="bool" name="HadronTransp-Enable">true</param>
-  <param type="alg"  name="HadronTransp-Model">  genie::HINCLCascadeIntranuke/Default  </param>
+  <param type="alg"  name="HadronTransp-Model">  genie::G4BertCascInterface/Default  </param>
 
 
  <!-- 

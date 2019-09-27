@@ -32,6 +32,7 @@
 #include <TFile.h>
 #include <TTree.h>
 #include <TMath.h>
+#include <string>
 
 #include "Framework/Conventions/Units.h"
 #include "Framework/EventGen/EventRecord.h"
@@ -46,6 +47,8 @@
 #include "Framework/ParticleData/PDGUtils.h"
 #include "Framework/ParticleData/PDGLibrary.h"
 #include "Framework/Utils/CmdLnArgParser.h"
+#include "TLorentzVector.h"
+#include "INCLGeometricXS.h"
 
 using std::endl;
 using std::setw;
@@ -62,6 +65,7 @@ INukeFateHA_t FindhAFate(const GHepRecord * evrec);
 string gOptInpFilename = "";    ///< input event file
 bool   gOptWriteOutput = false; ///< write out hadron cross sections
 string gOptOutputFilename = "gevgen_hadron_xsection.txt";
+string gOptModelName= ""; /// Need by INCL and GEANT4
 
 //____________________________________________________________________________
 int main(int argc, char ** argv)
@@ -103,7 +107,8 @@ int main(int argc, char ** argv)
   int    target_pdg = 0;
   int    displayno  = 100;
   double kin_energy = 0.;
-
+  double energy = 0.0;
+  double pp= 0.0;
   //
   // open the input ROOT file and get the event tree
   //
@@ -123,6 +128,9 @@ int main(int argc, char ** argv)
          << "No event tree found in input file!";
     return 1;
     }*/
+
+// This is for test only
+  int nfat_ (0);
 
   if (tree) {
 
@@ -149,6 +157,8 @@ int main(int argc, char ** argv)
       // extract info for the event sample
       if(ievent==0) {
 	kin_energy = event.Particle(0)->KinE();
+  pp=event.Particle(0)->Pz();
+  energy=event.Particle(0)->Energy();
 	probe_pdg  = event.Particle(0)->Pdg();
 	target_pdg = event.Particle(1)->Pdg();
       }
@@ -171,9 +181,10 @@ int main(int argc, char ** argv)
       case 4:   countfate[4]++; break;
       case 5:   countfate[5]++; break;
       case 6:   countfate[6]++; break;
+      case 12: countfate[8]++;break;
       case 13:  countfate[8]++; break;
       default:  
-	if (7<=fate && fate<=12) countfate[7]++;
+	if (7<fate && fate<=11) countfate[7]++;
 	else {
 	  LOG("gtestINukeHadroXSec", pWARN) 
              << "Undefined fate from FindhAFate() : " << fate;
@@ -204,8 +215,8 @@ int main(int argc, char ** argv)
     int     numpim  = 0;
     int     pdg_had[kmax];
     double  E_had  [kmax];
-    double  energy  = 0.0;
-
+    //double  energy  = 0.0;
+    
     ginuke->SetBranchAddress("ke",   &kin_energy);
     ginuke->SetBranchAddress("probe",&probe_pdg );
     ginuke->SetBranchAddress("tgt",  &target_pdg);
@@ -216,8 +227,8 @@ int main(int argc, char ** argv)
     ginuke->SetBranchAddress("pdgh", &pdg_had   );
     ginuke->SetBranchAddress("Eh",   &E_had     );
     ginuke->SetBranchAddress("e",    &energy    );
-
-
+    ginuke->SetBranchAddress("p",&pp);
+    
     for(int ievent = 0; ievent < nev; ievent++) {
 
       // get next tree entry
@@ -280,8 +291,21 @@ int main(int argc, char ** argv)
   int    A              = pdg::IonPdgCodeToA(target_pdg);
   int    Z              = pdg::IonPdgCodeToZ(target_pdg);
   double nuclear_radius = NR * R0 * TMath::Power(A, 1./3.); // fm
-  double area           = TMath::Pi() * TMath::Power(nuclear_radius,2);
-
+  double area= 0.0;  
+  string ParticleSpecies;
+  area           = TMath::Pi() * TMath::Power(nuclear_radius,2);
+  
+  TLorentzVector probe(.0,.0,pp*1000,energy*1000); // INCL++
+ 
+  if (gOptModelName=="HINCL") {
+    if (probe_pdg==2212) ParticleSpecies="Proton";
+    else if (probe_pdg==2112) ParticleSpecies="Neutron";
+    else if (probe_pdg==211) ParticleSpecies="PiPlus";
+    else if (probe_pdg==-211) ParticleSpecies="PiMinus";
+    else if (probe_pdg==111) ParticleSpecies="PiZero";
+    const double geomXSINCL= maxImpactParameter(ParticleSpecies, probe,A, Z);
+    area = geomXSINCL*geomXSINCL*TMath::Pi(); 
+  }
   PDGLibrary * pdglib = PDGLibrary::Instance();
   string probe_name  = pdglib->Find(probe_pdg)->GetName();
   string target_name = pdglib->Find(target_pdg)->GetName();
@@ -351,12 +375,12 @@ int main(int argc, char ** argv)
 
   if(gOptWriteOutput) 
   {
-    ifstream test_file;
+    std::ifstream test_file;
     bool file_exists=false;
     test_file.open(gOptOutputFilename.c_str(), std::ifstream::in);
     file_exists=test_file.is_open();
     test_file.close();
-    ofstream xsec_file; 
+    std::ofstream xsec_file; 
     xsec_file.open(gOptOutputFilename.c_str(), std::ios::app);
     if (!file_exists)
       {
@@ -394,16 +418,20 @@ INukeFateHA_t FindhAFate(const GHepRecord * evrec)
   double p_pdg = evrec->Probe()->Pdg();
 
   // particle codes
-  int numtype[] = {kPdgProton, kPdgNeutron, kPdgPiP, kPdgPiM, kPdgPi0, kPdgKP, kPdgKM, kPdgK0, kPdgGamma};
+  const int kPdgDeuteron = 1000010020; // pdg::IonPdgCode(2,1);
+  const int kPdgTritium  = 1000010030; // pdg::IonPdgCode(3,1);
+  const int kPdgAlpha    = 1000020040; // pdg::IonPdgCode(4,2);
+  const int kPdgHe3      = 1000020030;
+  //int numtype[] = {kPdgProton, kPdgNeutron, kPdgPiP, kPdgPiM, kPdgPi0, kPdgKP, kPdgKM, kPdgK0, kPdgGamma};
+  int numtype[] = {kPdgProton, kPdgNeutron, kPdgPiP, kPdgPiM, kPdgPi0, kPdgKP, kPdgKM, kPdgK0, kPdgGamma,kPdgDeuteron,kPdgTritium,kPdgHe3,kPdgAlpha};
   // num of particle for numtype
-  int num[]  = {0,0,0,0,0,0,0,0,0};
+  int num[]  = {0,0,0,0,0,0,0,0,0,0,0,0,0};
   int num_t  = 0;
   int num_nu = 0;
   int num_pi = 0;
   int num_k  = 0;
   // max KE for numtype
-  double numKE[] = {0,0,0,0,0,0,0,0,0};
-
+  double numKE[] = {0,0,0,0,0,0,0,0,0,0,0,0,0};
   GHepStatus_t status = kIStUndefined;
 
   bool hasBlob = false;
@@ -419,28 +447,32 @@ INukeFateHA_t FindhAFate(const GHepRecord * evrec)
     status=p->Status();
     if(status==kIStStableFinalState)
     {
-      switch((int) p->Pdg()) 
-      {
-        case ((int) kPdgProton)  : index = 0; break;
-        case ((int) kPdgNeutron) : index = 1; break;
-        case ((int) kPdgPiP)     : index = 2; break;
-        case ((int) kPdgPiM)     : index = 3; break;
-        case ((int) kPdgPi0)     : index = 4; break;
-        case ((int) kPdgKP)      : index = 5; break;
-        case ((int) kPdgKM)      : index = 6; break;
-        case ((int) kPdgK0)      : index = 7; break;
-        case ((int) kPdgGamma)   : index = 8; break;
-        case (2000000002)        : index = 9; hasBlob=true; break;
-                          default: index = 9; break;
-      }
+  switch((int) p->Pdg())
+  {
+    case ((int) kPdgProton)  : index = 0; break;
+    case ((int) kPdgNeutron) : index = 1; break;
+    case ((int) kPdgPiP)     : index = 2; break;
+    case ((int) kPdgPiM)     : index = 3; break;
+    case ((int) kPdgPi0)     : index = 4; break;
+    case ((int) kPdgKP)      : index = 5; break;
+    case ((int) kPdgKM)      : index = 6; break;
+    case ((int) kPdgK0)      : index = 7; break;
+    case ((int) kPdgGamma)   : index = 8; break;
+    case ((int)kPdgDeuteron) : index = 9; break;
+    case ((int)kPdgTritium)  : index =10; break;
+    case ((int)kPdgHe3)    : index =11; break;
+    case ((int)kPdgAlpha)      : index =12; break;
+    case (2000000002)        : index = 13; hasBlob=true; break;
+                      default: index = 13; break;
+  }
 
-      if(index!=9)
-      {
-        if(numFsPart==0) fs=p;
-        numFsPart++;
-        num[index]++;
-        if(p->KinE() > numKE[index]) numKE[index] = p->KinE();
-      }
+   if(index!=13)
+         {
+           if(numFsPart==0) fs=p;
+           numFsPart++;
+           num[index]++;
+           if(p->KinE() > numKE[index]) numKE[index] = p->KinE();
+         }
     }
   }
 
@@ -454,7 +486,7 @@ INukeFateHA_t FindhAFate(const GHepRecord * evrec)
     if (dE < 1e-15 && dPz < 1e-15 && dPy < 1e-15 && dPx < 1e-15) return kIHAFtNoInteraction;
   }
 
-  num_t  = num[0]+num[1]+num[2]+num[3]+num[4]+num[5]+num[6]+num[7];
+  num_t  = num[0]+num[1]+num[2]+num[3]+num[4]+num[5]+num[6]+num[7]; // avereno jereni ity tot ity avy eo
   num_nu = num[0]+num[1];
   num_pi =               num[2]+num[3]+num[4];
   num_k  =                                    num[5]+num[6]+num[7];
@@ -498,8 +530,14 @@ INukeFateHA_t FindhAFate(const GHepRecord * evrec)
  
       if(p_pdg==fs_pdg)
       {
-	if(num_nu==0) return kIHAFtElas;
-	else return kIHAFtInelas;
+        if(num_nu==0){
+  if(num[8]!=0||num[9]!=0||num[10]!=0||num[11]!=0||num[12]!=0) {
+    return kIHAFtInelas;}
+    else {
+      
+      return kIHAFtElas;}
+  }
+  else return kIHAFtInelas;
       }
       else if(((p_pdg==kPdgPiP || p_pdg==kPdgPiM) && fs_ind==4) ||
               ((fs_ind==2 || fs_ind==3) && p_pdg==kPdgPi0))
@@ -514,11 +552,13 @@ INukeFateHA_t FindhAFate(const GHepRecord * evrec)
       else if((p_pdg==kPdgPiP && fs_ind==3) ||
               (p_pdg==kPdgPiM &&fs_ind==2))
       {
+      
         return kIHAFtDCEx;
       }
       else if((p_pdg==kPdgKP && fs_ind==6) ||
               (p_pdg==kPdgKM &&fs_ind==5))
       {
+       
         return kIHAFtDCEx;
       }
     }
@@ -527,40 +567,52 @@ INukeFateHA_t FindhAFate(const GHepRecord * evrec)
       int fs_ind;
       if(num[0]>=1) { fs_ind=0; }
       else          { fs_ind=1; }
-
+      if(num_nu==0)
+      {
+       if (num[8]!=0||num[9]!=0||num[10]!=0||num[11]!=0||num[12]!=0) return kIHAFtInelas;
+        else 
+          return kIHAFtInelas;
+      }
       if(num_nu==1)
       {
-        if(numtype[fs_ind]==p_pdg) return kIHAFtElas;
-        else return kIHAFtUndefined;
+        if (num[8]!=0||num[9]!=0||num[10]!=0||num[11]!=0||num[12]!=0) return kIHAFtInelas;
+        else if(numtype[fs_ind]!=p_pdg) return kIHAFtInelas;
+        else if(numtype[fs_ind]==p_pdg) {
+        //if(gOptModelName=="HINCL") return kIHAFtInelas;
+       
+           return kIHAFtElas;}
+                else  {
+               
+                  return kIHAFtUndefined;}
       }
       else if(num_nu==2)
       {
         if(numKE[1]>numKE[0]) { fs_ind=1; }  
-        
-        if(numtype[fs_ind]==p_pdg)
-	  {
+        if (num[8]!=0||num[9]!=0||num[10]!=0||num[11]!=0||num[12]!=0) return kIHAFtInelas;
+       else  if(numtype[fs_ind]==p_pdg)
+    {
+
           //if(numKE[fs_ind]>=(.8*p_KE))
           //{
           //  if(num[0]==1 && num[1]==1) return kIHAFtKo;
           //  else if(num[0]==2) return kIHAFtKo;
-	  //  else return kIHAFtKo;
+    //  else return kIHAFtKo;
           //}
           //else
-	     return kIHAFtInelas; //fix later
-        }
-        else
+       return kIHAFtInelas; //fix later
+        }        else
         {
-	  // if(numKE[fs_ind]>=(.8*p_KE)) return kIHAFtInelas;
-	  // else
-	  // {
+    // if(numKE[fs_ind]>=(.8*p_KE)) return kIHAFtInelas;
+    // else
+    // {
           //  if(num[fs_ind]==2)
           //  {
           //    if(num[0]==2) return kIHAFtKo;
           //    else return kIHAFtKo;
           //  }
           //  else return kIHAFtInelas;
-	  // }
-	  return kIHAFtInelas; //fix later
+    // }
+    return kIHAFtInelas; //fix later
         }
       }
       else if(num_nu>2)
@@ -569,7 +621,10 @@ INukeFateHA_t FindhAFate(const GHepRecord * evrec)
         else if(num[0]==1 && num[1]==2) return kIHAFtKo;
         else if(num[0]==2 && num[1]==2) return kIHAFtKo;
         else if(num[0]==3 && num[1]==2) return kIHAFtKo;
-        else return kIHAFtKo;
+        if (num[8]!=0||num[9]!=0||num[10]!=0||num[11]!=0||num[12]!=0) return kIHAFtInelas;
+        else {
+        
+          return kIHAFtKo;}
       }
     }
     else if (p_pdg==kPdgKP || p_pdg==kPdgKM || p_pdg==kPdgK0)
@@ -589,12 +644,14 @@ INukeFateHA_t FindhAFate(const GHepRecord * evrec)
       else if(num[0]==1 && num[1]==2) return kIHAFtKo;
       else if(num[0]==2 && num[1]==2) return kIHAFtKo;
       else if(num[0]==3 && num[1]==2) return kIHAFtKo;
+      else       if (num[9]!=0||num[10]!=0||num[11]!=0||num[12]!=0) return kIHAFtInelas;
       else if(num_nu < 1)             return kIHAFtUndefined;
       else                            return kIHAFtKo;
     }
   }
 
   LOG("Intranuke",pWARN) << "---> *** Undefined fate! ***" << "\n" << (*evrec);
+ 
   return kIHAFtUndefined;
 }
 //____________________________________________________________________________
@@ -618,6 +675,9 @@ void GetCommandLineArgs(int argc, char ** argv)
   if( parser.OptionExists('o') ) {
     LOG("gtestINukeHadroXSec", pINFO) << "Reading output filename";
     gOptOutputFilename = parser.ArgAsString('o');
+  }
+  if( parser.OptionExists('m') ){
+    gOptModelName=parser.ArgAsString('m');
   }
 
   // write-out events?

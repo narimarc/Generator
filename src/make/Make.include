@@ -212,6 +212,15 @@ INCL_LIBRARIES := $(BOOST_LIBRARIES) $(FORT_LIBRARIES) $(INCL_LIBRARIES)
 include $(GOPT_WITH_INCL_INC)/../incl_flags.make
 
 endif
+#-------------------------------------------------------------------
+#                             GEANT4
+#-------------------------------------------------------------------
+
+GEANT4_LIBRARIES =
+GEANT4_INCLUDES  =
+
+GEANT4_INCLUDES  = -I$(GOPT_WITH_GEANT4_INC)
+GEANT4_LIBRARIES = -L$(GOPT_WITH_GEANT4_LIB) -lG4global -lG4clhep -lG4geometry -lG4materials -lG4particles -lG4processes -lG4track -lG4digits_hits -lG4graphics_reps -lG4intercoms
 
 
 
@@ -545,6 +554,7 @@ CPP_INCLUDES := \
     $(LOG_INCLUDES) \
     $(ROOT_INCLUDES) \
     $(LHAPDF_INCLUDES) \
+    $(GEANT4_INCLUDES) \
     $(GSL_INCLUDES) \
     $(GENIE_INCLUDES)
 
@@ -563,6 +573,7 @@ LIBRARIES := $(SYSLIBS) \
              $(LHAPDF_LIBRARIES) \
              $(XML_LIBRARIES) \
              $(LOG_LIBRARIES) \
+             $(GEANT4_LIBRARIES) \
              $(GSL_LIBRARIES) \
              $(GPROF_LIBRARIES) \
              $(EXTRALIBS)

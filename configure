@@ -150,6 +150,7 @@ my $gopt_enable_nnbar_oscillation = "NO";
 my $gopt_enable_boosted_dark_mat  = "NO";
 my $gopt_enable_masterclass       = "NO";
 my $gopt_enable_incl              = "NO";
+my $gopt_enable_geant4             = "NO";
 # Check configure's command line arguments for non-default values
 #
 if(($match = grep(/--enable-profiler/i,            @ARGV)) > 0) { $gopt_enable_profiler          = "YES"; }
@@ -172,6 +173,7 @@ if(($match = grep(/--enable-nnbar-oscillation/i,   @ARGV)) > 0) { $gopt_enable_n
 if(($match = grep(/--enable-boosted-dark-matter/i, @ARGV)) > 0) { $gopt_enable_boosted_dark_mat  = "YES"; }
 if(($match = grep(/--enable-masterclass/i,         @ARGV)) > 0) { $gopt_enable_masterclass       = "YES"; }
 if(($match = grep(/--enable-incl/i,                @ARGV)) > 0) { $gopt_enable_incl              = "YES"; }
+if(($match = grep(/--enable-geant4/i,             @ARGV)) > 0) { $gopt_enable_geant4             = "YES"; }
 
 # LHAPDF6 and 5 are mutually exlusive
 if  ($gopt_enable_lhapdf6 eq "YES") { $gopt_enable_lhapdf5 = "NO";}
@@ -584,6 +586,64 @@ if($gopt_enable_incl eq "YES") {
   }
 }
 
+################# GEANT4##################################
+# If --enable-geant4 was set then the full path to the Geant4 library must be specified
+my $gopt_with_geant4_lib = "";
+if($gopt_enable_geant4 eq "YES") {
+  if(($match = grep(/--with-geant4-lib/i, @ARGV)) > 0) {
+    $options=~m/--with-geant4-lib=(\S*)/i;
+    $gopt_with_geant4_lib = $1;
+  }
+  if(! -d $gopt_with_geant4_lib)  {
+    print "\n*** Warning *** GEANT4 has been enabled but you didn't specify the GEANT4 library path \n";
+  }
+  # if it was not set, try to pick it up from the environment
+  if($gopt_with_geant4_lib eq "" && defined $ENV{'GEANT4_LIB'}) {
+    $gopt_with_geant4_lib = $ENV{'GEANT4_LIB'};
+    print "The \$GEANT4_LIB env var is defined. I will pick that and use --with-geant4-lib=$gopt_with_geant4_lib\n";
+  }
+
+  # check
+  my $fileso    = "$gopt_with_geant4_lib/libG4physicslists.so";
+  my $filea = "$gopt_with_incl_lib/libG4physicslists.a";
+  if(! -e $fileso && ! -e $filea) {
+    print "*** Error *** You need to specify the path to libG4physicslists using --with-geant4-lib=/some/path/\n";
+    print "*** Error *** Otherwise, you should --disable-geant4\n\n";
+    exit 1;
+  }
+}
+
+# If --enable-geant4 was set then the full path to the Geant4 includes must be specified
+my $gopt_with_geant_inc = "";
+if($gopt_enable_geant4 eq "YES") {
+  if(($match = grep(/--with-geant4-inc/i, @ARGV)) > 0) {
+    $options=~m/--with-geant4-inc=(\S*)/i;
+    $gopt_with_geant4_inc = $1;
+  }
+  if(! -d $gopt_with_geant4_inc)  {
+    print "\n*** Warning *** GEANT4 has been enabled but you didn't specify the GEANT4 includes path \n";
+  }
+  # if it was not set, try to pick it up from the environment
+  if($gopt_with_geant4_inc eq "" && defined $ENV{'GEANT4_INC'}) {
+    $gopt_with_geant4_inc = $ENV{'GEANT4_INC'};
+    print "The \$GEANT4_INC env var is defined. I will pick that and use --with-geant4-inc=$gopt_with_geant4_inc\n";
+  }
+
+  # check
+  my $file = "$gopt_with_geant4_inc/G4FRFeatures.hh";
+  if(! -e $file) {
+    print "*** Error *** You need to specify the path to G4FRFeatures.hh using --with-geant4-inc=/some/path/\n";
+    print "*** Error *** Otherwise, you should --disable-geant4\n\n";
+    exit 1;
+  }
+}
+
+# Get Geant4 include and library paths 
+#
+
+
+################# GEANT4##################################
+
 #Save config options
 print MKCONF "GOPT_ENABLE_LHAPDF5=$gopt_enable_lhapdf5\n";
 print MKCONF "GOPT_ENABLE_LHAPDF6=$gopt_enable_lhapdf6\n";
@@ -602,6 +662,7 @@ print MKCONF "GOPT_ENABLE_DOXYGEN_DOC=$gopt_enable_doxygen_doc\n";
 print MKCONF "GOPT_ENABLE_DYLIBVERSION=$gopt_enable_dylibversion\n";
 print MKCONF "GOPT_ENABLE_LOW_LEVEL_MESG=$gopt_enable_lowlevel_mesg\n";
 print MKCONF "GOPT_ENABLE_INCL=$gopt_enable_incl\n";
+print MKCONF "GOPT_ENABLE_GEANT4=$gopt_enable_geant4\n";
 print MKCONF "GOPT_WITH_COMPILER=$gopt_with_compiler\n";
 print MKCONF "GOPT_WITH_CXX_DEBUG_FLAG=$gopt_with_cxx_debug_flag\n";
 print MKCONF "GOPT_WITH_CXX_OPTIMIZ_FLAG=-$gopt_with_cxx_optimiz_flag\n";
@@ -620,6 +681,8 @@ print MKCONF "GOPT_WITH_INCL_INC=$gopt_with_incl_inc\n";
 print MKCONF "GOPT_WITH_INCL_LIB=$gopt_with_incl_lib\n";
 print MKCONF "GOPT_WITH_BOOST_INC=$gopt_with_boost_inc\n";
 print MKCONF "GOPT_WITH_BOOST_LIB=$gopt_with_boost_lib\n";
+print MKCONF "GOPT_WITH_GEANT4_INC=$gopt_with_geant4_inc\n";
+print MKCONF "GOPT_WITH_GEANT4_LIB=$gopt_with_geant4_lib\n";
 
 close(MKCONF);
 
