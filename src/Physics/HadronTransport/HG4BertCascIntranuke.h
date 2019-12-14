@@ -46,7 +46,6 @@ class HG4BertCascIntranuke : public EventRecordVisitorI {
 public :
   HG4BertCascIntranuke();
   HG4BertCascIntranuke(string config);
-  HG4BertCascIntranuke(string name, string config);
   int G4BertCascade(GHepRecord * event_rec) const;
  ~HG4BertCascIntranuke();
 
@@ -63,12 +62,13 @@ private:
 
   void InitG4Particles() const;
   void TransportHadrons(GHepRecord* ev) const;
-  G4ParticleDefinition* PDGtoG4Particle(int pdg) const;
+  const G4ParticleDefinition* PDGtoG4Particle(int pdg) const;
   G4KineticTrackVector* ConvertGenieSecondariesToG4(GHepRecord* evrec) const;
   G4KineticTrackVector* ConvertGenieSecondariesToG4(std::vector<GHepParticle> partList) const;
   //TLorentzVector pincident(std::vector<GHepParticle>partList)const;
 
   bool Conserve4Momentum(GHepRecord* ev) const;
+  bool   CanRescatter       (const GHepParticle* p) const;
   void   GenerateVertex     (GHepRecord * ev) const;
   bool   IsInNucleus        (const GHepParticle* p) const;
   void SetTrackingRadius(const GHepParticle* p) const;
@@ -89,20 +89,19 @@ private:
                                    // determining how far to track hadrons
                                    //  beyond the "nuclear boundary"
   double       fNucRmvE;      ///< binding energy to subtract from cascade nucleons
-  double       fDelRPion;     ///< factor by which Pion Compton wavelength gets multiplied to become nuclear size enhancement 
-  double       fDelRNucleon;  ///< factor by which Nucleon Compton wavelength gets multiplied to become nuclear size enhancement 
+  double       fDelRPion;     ///< factor by which Pion Compton wavelength gets multiplied to become nuclear size enhancement
+  double       fDelRNucleon;  ///< factor by which Nucleon Compton wavelength gets multiplied to become nuclear size enhancement
   double       fHadStep;      ///< step size for intranuclear hadron transport
   double       fNucAbsFac;    ///< absorption xsec correction factor (hN Mode)
   double       fNucCEXFac;    ///< charge exchange xsec correction factor (hN Mode)
   double       fEPreEq;       ///< threshold for pre-equilibrium reaction
   double       fFermiFac;     ///< testing parameter to modify fermi momentum
-  double       fFreeStep;     ///< produced particle free stem, in fm
   double       fFermiMomentum;     ///< whether or not particle collision is pauli blocked
   bool         fUseOset;      ///< Oset model for low energy pion in hN
   bool         fAltOset;      ///< NuWro's table-based implementation (not recommended)
   bool         fXsecNNCorr;   ///< use nuclear medium correction for NN cross section
   bool         fDoFermi;
-  double       fPionMFPScale;  
+  double       fPionMFPScale;
   double       fNucleonMFPScale;
 };
 

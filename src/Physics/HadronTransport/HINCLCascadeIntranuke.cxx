@@ -622,8 +622,10 @@ void HINCLCascadeIntranuke::TransportHadrons(GHepRecord * evrec) const {
     Zresult += (fRemnZ + pdgcpiontoZ(sp->Pdg())- result.ZRem[0]);
     Aexception = A_i - Aresult; // remaining particles in the nucleus
     Zexception = Z_i - Zresult;
-    if ( Zexception <= 0 || Aexception <= 0 ) {
+    if ( Zexception <= 0 || Aexception <= 0 || Aexception<=Zexception) {
       // Make sure that ARemn and Zremn >0
+       Zl+=pdgcpiontoZ(sp->Pdg());
+      Aft+=pdgcpiontoA(sp->Pdg());
       sp->SetFirstMother(icurr);
       sp->SetStatus(kIStStableFinalState);
       evrec->AddParticle(*sp);
