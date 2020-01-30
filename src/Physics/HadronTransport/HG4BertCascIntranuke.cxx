@@ -452,7 +452,7 @@ void HG4BertCascIntranuke::TransportHadrons(GHepRecord * evrec) const
 
     int Zinit = remNucl->Z() - outLept->Charge()/3;
     //  if (incidentBaryon->Pdg() != struckNucleon->Pdg() ) Zinit--;
-    Zinit += (struckNucleon->Charge() - incidentBaryon->Charge() )/3;
+    // Zinit += (struckNucleon->Charge() - incidentBaryon->Charge() )/3;
     //std::cout << " Zinit = " << Zinit << std::endl;
     // unused // int Ainit = remNucl->A();
     //std::cout << " Ainit = " << Ainit << std::endl;
@@ -466,7 +466,7 @@ void HG4BertCascIntranuke::TransportHadrons(GHepRecord * evrec) const
 
     TLorentzVector struckMomentum(struckNucleon->Px(), struckNucleon->Py(), struckNucleon->Pz(), EE);
     TLorentzVector pIncident;
-    if ( List_of_transparents.size() == 0 ) {
+    if ( List_of_transparents.size() == 0 && has_incidenBaryon) {
       pIncident= *(tgtNucl->P4()) - *(remNucl->P4()) +
         *(probe->P4()) - *(outLept->P4()) - struckMomentum;
     } else {
@@ -495,7 +495,7 @@ void HG4BertCascIntranuke::TransportHadrons(GHepRecord * evrec) const
 
     // Get hadronic secondaries and convert them to G4KineticTracks
     G4KineticTrackVector* g4secondaries = 0;
-    if ( List_of_transparents.size() == 0 ) {
+    if ( List_of_transparents.size() == 0 && has_incidenBaryon) {
       g4secondaries = ConvertGenieSecondariesToG4(evrec);
     } else {
       g4secondaries = ConvertGenieSecondariesToG4(List_of_secondaries);
@@ -581,8 +581,9 @@ void HG4BertCascIntranuke::TransportHadrons(GHepRecord * evrec) const
       GHepParticle largest_Fragment(npdg, kIStFinalStateNuclearRemnant,rem_nucl,
                                     -1,-1,-1, remP, remX);
       evrec->AddParticle(largest_Fragment);
-      has_remnant = true;
+      
     } // Nfrag > 0
+    has_remnant = true;
   }
   // Mark the initial remnant nucleus as an intermediate state
   if ( ! has_remnant ) {
@@ -615,8 +616,8 @@ bool HG4BertCascIntranuke::CanRescatter(const GHepParticle * p) const
             p->Pdg() == kPdgPi0     ||
             p->Pdg() == kPdgProton  ||
             p->Pdg() == kPdgNeutron ||
-            p->Pdg() == kPdgKP      ||
-            p->Pdg() == kPdgKM      ||
+            //p->Pdg() == kPdgKP      ||
+            //p->Pdg() == kPdgKM      ||
             p->Pdg() == kPdgSigma0  ||
             p->Pdg() == kPdgSigmaM  ||
             p->Pdg() == kPdgSigmaP
@@ -686,7 +687,7 @@ G4KineticTrackVector* HG4BertCascIntranuke::ConvertGenieSecondariesToG4(GHepReco
   G4KineticTrack* kt = 0;
 
   while( (p = (GHepParticle*) piter.Next()) ) {
-    if ( p->Status() == kIStHadronInTheNucleus ) {
+    if ( p->Status() == kIStHadronInTheNucleus && this->CanRescatter(p)) {
       pDef = PDGtoG4Particle(p->Pdg() );
       double formationTime = p->Vt();
       G4ThreeVector formationPosition(p->Vx()*GeToG4length,
