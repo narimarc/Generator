@@ -263,7 +263,7 @@ void HG4BertCascIntranuke::ProcessEventRecord(GHepRecord* evrec) const
 }
 
 //___________________________________________________________________________
-void HG4BertCascIntranuke::InitG4Particles() const
+void HG4BertCascIntranuke::InitG4Particles() constconvert
 {
   G4LeptonConstructor::ConstructParticle();
   G4MesonConstructor::ConstructParticle();
@@ -284,7 +284,7 @@ void HG4BertCascIntranuke::InitG4Particles() const
     << "testing initialization of G4 particles \n"
     << " e   0x" << electron << "\n"
     << " p   0x" << proton << "\n"
-    << " n   0x" << neutron << "\n"
+    << " n   0x" << neutron << "\n"convert
     << " pi+ 0x" << piplus << "\n"
     << "...InitG4Particles complete";
   if ( electron == 0 || proton == 0 || neutron == 0 || piplus == 0 ) {
@@ -385,7 +385,7 @@ void HG4BertCascIntranuke::TransportHadrons(GHepRecord * evrec) const
   GHepParticle* incidentBaryon = 0;
   TObjArrayIter piter(evrec);
   int icurr =-1;
-  bool has_incidenBaryon(false),has_secondaries(false), has_remnant(false);
+  bool has_incidenBaryon(false),has_secondaries(false), has_remnant(false), check_for_Econs(false);
   std::vector<GHepParticle> List_of_secondaries, List_of_transparents;
 
   fRemnA=remNucl->A();
@@ -451,6 +451,7 @@ void HG4BertCascIntranuke::TransportHadrons(GHepRecord * evrec) const
         << "Unrecognized baryon in nucleus";
 
     int Zinit = remNucl->Z() - outLept->Charge()/3;
+    if(incidentBaryon) Zinit += (struckNucleon->Charge() - incidentBaryon->Charge() )/3;
     //  if (incidentBaryon->Pdg() != struckNucleon->Pdg() ) Zinit--;
     // Zinit += (struckNucleon->Charge() - incidentBaryon->Charge() )/3;
     //std::cout << " Zinit = " << Zinit << std::endl;
@@ -459,17 +460,21 @@ void HG4BertCascIntranuke::TransportHadrons(GHepRecord * evrec) const
 
     G4Fancy3DNucleus* g4Nucleus = new G4Fancy3DNucleus();
     //g4Nucleus->Init(Ainit, Zinit);
-    g4Nucleus->Init(remNucl->A(),remNucl->Z());
+    
 
-    double EE = struckNucleon->E() - tgtNucl->Mass() +
-                g4Nucleus->GetMass()*units::MeV;
-
-    TLorentzVector struckMomentum(struckNucleon->Px(), struckNucleon->Py(), struckNucleon->Pz(), EE);
     TLorentzVector pIncident;
     if ( List_of_transparents.size() == 0 && has_incidenBaryon) {
+      g4Nucleus->Init(remNucl->A(),Zinit);
+
+      double EE = struckNucleon->E() - tgtNucl->Mass() +
+                  g4Nucleus->GetMass()*units::MeV;
+      TLorentzVector struckMomentum(struckNucleon->Px(), struckNucleon->Py(), struckNucleon->Pz(), EE);
       pIncident= *(tgtNucl->P4()) - *(remNucl->P4()) +
         *(probe->P4()) - *(outLept->P4()) - struckMomentum;
     } else {
+      g4Nucleus->Init(remNucl->A(),remNucl->Z());
+      double EE = struckNucleon->E() - tgtNucl->Mass() + g4Nucleus->GetMass()*units::MeV;
+      TLorentzVector struckMomentum(struckNucleon->Px(), struckNucleon->Py(), struckNucleon->Pz(), EE);
       Double_t PxI(0),PyI(0),PzI(0),EEI(0);
       for (size_t it=0; it<List_of_secondaries.size(); it++ ) {
         PxI+=List_of_secondaries.at(it).P4()->Px();
@@ -477,8 +482,14 @@ void HG4BertCascIntranuke::TransportHadrons(GHepRecord * evrec) const
         PzI+=List_of_secondaries.at(it).P4()->Pz();
         EEI+=List_of_secondaries.at(it).P4()->E();
       }
-      pIncident.SetPxPyPzE(PxI,PyI,PzI,EEI);
       incidentDef=PDGtoG4Particle(List_of_secondaries.at(0).Pdg());
+      if(List_of_secondaries.at(0).Pdg()==211||List_of_secondaries.at(0).Pdg()==-211||List_of_secondaries.at(0).Pdg()==111) { // if the incident particle is a pion
+      pIncident.SetPxPyPzE(PxI,PyI,PzI,EEI);
+      check_for_Econs=true;
+      }
+      else {
+        pIncident.SetPxPyPzE(PxI -struckNucleon->Px(),PyI-struckNucleon->Py(),PzI-struckNucleon->Pz(),EEI-EE);
+      }
     }
 
     G4ThreeVector incidentDir(pIncident.Vect().Unit().Px(),
@@ -573,7 +584,7 @@ void HG4BertCascIntranuke::TransportHadrons(GHepRecord * evrec) const
       // Get largest nuclear fragment in output and call it the remnant
       npdg = outgoingFragments[rem_index].getDefinition()->GetPDGEncoding();
       //GHepParticle largest_Fragment(npdg, kIStStableFinalState,1,-1,-1,-1, remP, remX);
-      if ( List_of_transparents.size() != 0 ) {
+      if ( List_of_transparents.size() != 0 && check_for_Econs) {
         remP.SetPx(remP.Px()+remNucl->P4()->Px());
         remP.SetPy(remP.Py()+remNucl->P4()->Py());
         remP.SetPz(remP.Pz()+remNucl->P4()->Pz());
