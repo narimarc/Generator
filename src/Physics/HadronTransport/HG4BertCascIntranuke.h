@@ -64,8 +64,6 @@ private:
   void TransportHadrons(GHepRecord* ev) const;
   const G4ParticleDefinition* PDGtoG4Particle(int pdg) const;
   G4KineticTrackVector* ConvertGenieSecondariesToG4(GHepRecord* evrec) const;
-  G4KineticTrackVector* ConvertGenieSecondariesToG4(std::vector<GHepParticle> partList) const;
-  //TLorentzVector pincident(std::vector<GHepParticle>partList)const;
 
   bool Conserve4Momentum(GHepRecord* ev) const;
   bool   CanRescatter       (const GHepParticle* p) const;
