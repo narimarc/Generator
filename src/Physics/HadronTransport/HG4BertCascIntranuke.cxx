@@ -386,7 +386,7 @@ void HG4BertCascIntranuke::TransportHadrons(GHepRecord * evrec) const
   TObjArrayIter piter(evrec);
   TObjArrayIter pitter(evrec);
   int icurr =-1;
-  bool has_incidenBaryon(false),has_secondaries(false), transparents(false),has_remnant(false), has_incidentparticle(false),check_for_Econs(false);
+  bool has_incidenBaryon(false),has_secondaries(false), transparents(false),has_remnant(false), has_incidentparticle(false);
 
   fRemnA=remNucl->A();
   fRemnZ=remNucl->Z();
@@ -453,13 +453,7 @@ int Ainit = remNucl->A();
 G4Fancy3DNucleus* g4Nucleus = new G4Fancy3DNucleus();
 
 TLorentzVector pIncident;
-if(!transparents && has_incidenBaryon){
-  g4Nucleus->Init(remNucl->A(),Zinit);
-  double EE = struckNucleon->E() - tgtNucl->Mass() + g4Nucleus->GetMass()*units::MeV;
-  TLorentzVector struckMomentum(struckNucleon->Px(), struckNucleon->Py(), struckNucleon->Pz(), EE);
-  pIncident= *(tgtNucl->P4()) - *(remNucl->P4()) + *(probe->P4()) - *(outLept->P4()) - struckMomentum;
-}
-else {
+
   g4Nucleus->Init(remNucl->A(),remNucl->Z());
   double EE = struckNucleon->E() - tgtNucl->Mass() + g4Nucleus->GetMass()*units::MeV;
   TLorentzVector struckMomentum(struckNucleon->Px(), struckNucleon->Py(), struckNucleon->Pz(), EE);
@@ -491,8 +485,7 @@ else {
   if(!has_incidentparticle) incidentDef=PDGtoG4Particle(pinN->Pdg()); // if no baryon among the secondaries
 
   pIncident.SetPxPyPzE(PxI,PyI,PzI,EEI);
-  check_for_Econs=true;
-}
+
 
 G4ThreeVector incidentDir(pIncident.Vect().Unit().Px(),
   pIncident.Vect().Unit().Py(),
@@ -580,12 +573,11 @@ TLorentzVector remX(tgtNucl->Vx(), tgtNucl->Vy(), tgtNucl->Vz(), tgtNucl->Vt() )
           }
 
         // Get largest nuclear fragment in output and call it the remnant
-          npdg = outgoingFragments[rem_index].getDefinition()->GetPDGEncoding();
-          if(check_for_Econs){ 
+          npdg = outgoingFragments[rem_index].getDefinition()->GetPDGEncoding(); 
             remP.SetPx(remP.Px()+remNucl->P4()->Px());
             remP.SetPy(remP.Py()+remNucl->P4()->Py());
             remP.SetPz(remP.Pz()+remNucl->P4()->Pz());
-          }
+      
           GHepParticle largest_Fragment(npdg, kIStFinalStateNuclearRemnant,rem_nucl,-1,-1,-1, remP, remX);
           evrec->AddParticle(largest_Fragment);
            } // Nfrag > 0
