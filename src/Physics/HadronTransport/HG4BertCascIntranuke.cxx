@@ -454,20 +454,20 @@ G4Fancy3DNucleus* g4Nucleus = new G4Fancy3DNucleus();
 
 TLorentzVector pIncident;
 
-  g4Nucleus->Init(remNucl->A(),remNucl->Z());
-  double EE = struckNucleon->E() - tgtNucl->Mass() + g4Nucleus->GetMass()*units::MeV;
-  TLorentzVector struckMomentum(struckNucleon->Px(), struckNucleon->Py(), struckNucleon->Pz(), EE);
-  Double_t PxI(0),PyI(0),PzI(0),EEI(0);
-  int icccur=-1;
-  int pos_in_evrec(0);
-  while( (p = (GHepParticle*) pitter.Next()) ) {
-    icccur++;
-    if (p->Status() == kIStHadronInTheNucleus && this->CanRescatter(p) && p->RescatterCode()!=1) {
-      PxI+=p->P4()->Px();
-      PyI+=p->P4()->Py();
-      PzI+=p->P4()->Pz();
-      EEI+=p->P4()->E();
-      if(pos_in_evrec==0) pos_in_evrec = icccur;       
+g4Nucleus->Init(remNucl->A(),remNucl->Z());
+double EE = struckNucleon->E() - tgtNucl->Mass() + g4Nucleus->GetMass()*units::MeV;
+TLorentzVector struckMomentum(struckNucleon->Px(), struckNucleon->Py(), struckNucleon->Pz(), EE);
+Double_t PxI(0),PyI(0),PzI(0),EEI(0);
+int icccur=-1;
+int pos_in_evrec(0);
+while( (p = (GHepParticle*) pitter.Next()) ) {
+  icccur++;
+  if (p->Status() == kIStHadronInTheNucleus && this->CanRescatter(p) && p->RescatterCode()!=1) {
+    PxI+=p->P4()->Px();
+    PyI+=p->P4()->Py();
+    PzI+=p->P4()->Pz();
+    EEI+=p->P4()->E();
+    if(pos_in_evrec==0) pos_in_evrec = icccur;       
         if(!has_incidentparticle){ // take the baryon as incident particle
           if (p->Pdg() == kPdgProton || 
             p->Pdg() == kPdgNeutron || 
@@ -487,40 +487,40 @@ TLorentzVector pIncident;
   pIncident.SetPxPyPzE(PxI,PyI,PzI,EEI);
 
 
-G4ThreeVector incidentDir(pIncident.Vect().Unit().Px(),
-  pIncident.Vect().Unit().Py(),
-  pIncident.Vect().Unit().Pz());
+  G4ThreeVector incidentDir(pIncident.Vect().Unit().Px(),
+    pIncident.Vect().Unit().Py(),
+    pIncident.Vect().Unit().Pz());
 
-double dynamicMass = std::sqrt(pIncident.M2() );
-double incidentKE = pIncident.E() - dynamicMass;
+  double dynamicMass = std::sqrt(pIncident.M2() );
+  double incidentKE = pIncident.E() - dynamicMass;
     // Create pseudo-particle to supply Bertini collider with bullet
 
-G4DynamicParticle dp(incidentDef, incidentDir, incidentKE/units::MeV, dynamicMass/units::MeV);
+  G4DynamicParticle dp(incidentDef, incidentDir, incidentKE/units::MeV, dynamicMass/units::MeV);
 
-G4InuclElementaryParticle* incident = new G4InuclElementaryParticle(dp,G4InuclParticle::bullet);
+  G4InuclElementaryParticle* incident = new G4InuclElementaryParticle(dp,G4InuclParticle::bullet);
 
 
 
     // Get hadronic secondaries and convert them to G4KineticTracks
 
-G4KineticTrackVector* g4secondaries = ConvertGenieSecondariesToG4(evrec); 
+  G4KineticTrackVector* g4secondaries = ConvertGenieSecondariesToG4(evrec); 
 
-int Nsec = g4secondaries->size();
+  int Nsec = g4secondaries->size();
     // Set up output and start the cascade
-G4CollisionOutput cascadeOutput;
-G4InuclCollider bertCollider;
-bertCollider.useCascadeDeexcitation();
+  G4CollisionOutput cascadeOutput;
+  G4InuclCollider bertCollider;
+  bertCollider.useCascadeDeexcitation();
     // bertCollider.setVerboseLevel(3);
-bertCollider.rescatter(incident, g4secondaries, g4Nucleus, cascadeOutput);
-delete incident;
-delete g4Nucleus;
-for (int n = 0; n < Nsec; n++) delete (*g4secondaries)[n];
-  delete g4secondaries;
+  bertCollider.rescatter(incident, g4secondaries, g4Nucleus, cascadeOutput);
+  delete incident;
+  delete g4Nucleus;
+  for (int n = 0; n < Nsec; n++) delete (*g4secondaries)[n];
+    delete g4secondaries;
 
     //
     // Add Geant4 generated particles to the event record
     //
-TLorentzVector remX(tgtNucl->Vx(), tgtNucl->Vy(), tgtNucl->Vz(), tgtNucl->Vt() );
+  TLorentzVector remX(tgtNucl->Vx(), tgtNucl->Vy(), tgtNucl->Vz(), tgtNucl->Vt() );
 
     int rem_nucl = evrec->RemnantNucleusPosition();  // position in array 
     int Nfrag = cascadeOutput.numberOfOutgoingNuclei();
@@ -574,10 +574,10 @@ TLorentzVector remX(tgtNucl->Vx(), tgtNucl->Vy(), tgtNucl->Vz(), tgtNucl->Vt() )
 
         // Get largest nuclear fragment in output and call it the remnant
           npdg = outgoingFragments[rem_index].getDefinition()->GetPDGEncoding(); 
-            remP.SetPx(remP.Px()+remNucl->P4()->Px());
-            remP.SetPy(remP.Py()+remNucl->P4()->Py());
-            remP.SetPz(remP.Pz()+remNucl->P4()->Pz());
-      
+          remP.SetPx(remP.Px()+remNucl->P4()->Px());
+          remP.SetPy(remP.Py()+remNucl->P4()->Py());
+          remP.SetPz(remP.Pz()+remNucl->P4()->Pz());
+
           GHepParticle largest_Fragment(npdg, kIStFinalStateNuclearRemnant,rem_nucl,-1,-1,-1, remP, remX);
           evrec->AddParticle(largest_Fragment);
            } // Nfrag > 0
@@ -609,16 +609,23 @@ TLorentzVector remX(tgtNucl->Vx(), tgtNucl->Vy(), tgtNucl->Vz(), tgtNucl->Vt() )
       bool HG4BertCascIntranuke::CanRescatter(const GHepParticle * p) const
       {
         assert(p);
-        return  ( p->Pdg() == kPdgPiP     || 
-          p->Pdg() == kPdgPiM     || 
-          p->Pdg() == kPdgPi0     ||
-          p->Pdg() == kPdgProton  ||
-          p->Pdg() == kPdgNeutron ||
-          p->Pdg() == kPdgKP      ||
-          p->Pdg() == kPdgKM      ||
-          p->Pdg() == kPdgSigma0  ||
-          p->Pdg() == kPdgSigmaM  ||
-          p->Pdg() == kPdgSigmaP
+        return  ( p->Pdg() == kPdgPiP   || 
+          p->Pdg() == kPdgPiM           || 
+          p->Pdg() == kPdgPi0           ||
+          p->Pdg() == kPdgProton        ||
+          p->Pdg() == kPdgAntiProton    ||
+          p->Pdg() == kPdgNeutron       ||
+          p->Pdg() == kPdgKP            ||
+          p->Pdg() == kPdgKM            ||
+          p->Pdg() == kPdgK0            ||
+          p->Pdg() == kPdgK0L           ||
+          p->Pdg() == kPdgSigma0        ||
+          p->Pdg() == kPdgSigmaM        ||
+          p->Pdg() == kPdgSigmaP        ||
+        //p->Pdg() == kPdgSigmaPPc      ||
+          p->Pdg() == kPdgXiM           ||
+          p->Pdg() == kPdgXi0           ||
+          p->Pdg() == kPdgLambda
           );
       }
 
